@@ -1,151 +1,191 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>A Shy Penguin</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(#eef7ff, #ffffff);
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<title>A Shy Penguin</title>
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    .card {
-      background: white;
-      padding: 28px;
-      border-radius: 18px;
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-      animation: float 5s ease-in-out infinite;
-      position: relative;
-      z-index: 2;
-    }
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #eaf6ff, #ffffff);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
-    }
+/* floating background sparkles */
+.sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(200,230,255,0.8);
+  border-radius: 50%;
+  animation: drift linear infinite;
+}
 
-    img {
-      width: 150px;
-      margin-bottom: 10px;
-      animation: peek 3.5s ease-in-out infinite;
-    }
+@keyframes drift {
+  from { transform: translateY(-10vh); opacity: 1; }
+  to { transform: translateY(110vh); opacity: 0; }
+}
 
-    @keyframes peek {
-      0%   { transform: translateY(10px) scale(0.95); opacity: 0.6; }
-      40%  { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(10px) scale(0.95); opacity: 0.6; }
-    }
+.card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  padding: 32px;
+  border-radius: 22px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+  animation: float 6s ease-in-out infinite;
+}
 
-    h1, p {
-      opacity: 0;
-      animation: fadeIn 1s forwards;
-    }
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
 
-    h1 { animation-delay: 0.8s; }
-    p:nth-of-type(1) { animation-delay: 1.8s; }
-    p:nth-of-type(2) { animation-delay: 3.2s; }
+.penguin-wrap {
+  position: relative;
+}
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
+.penguin {
+  width: 150px;
+  animation: shyBob 4s ease-in-out infinite;
+}
 
-    button {
-      margin-top: 18px;
-      padding: 12px 18px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
+@keyframes shyBob {
+  0% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(4px) rotate(-2deg); }
+  60% { transform: translateY(4px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
 
-    .yes {
-      background: #8bcf9b;
-      color: white;
-    }
+.blush {
+  position: absolute;
+  width: 14px;
+  height: 8px;
+  background: #ffb3c1;
+  border-radius: 50%;
+  bottom: 28px;
+  opacity: 0.6;
+}
 
-    .maybe {
-      background: #e0e0e0;
-      margin-left: 8px;
-    }
+.blush.left { left: 45px; }
+.blush.right { right: 45px; }
 
-    /* Snow */
-    .snow {
-      position: absolute;
-      top: -10px;
-      color: #cfe6ff;
-      font-size: 12px;
-      animation: fall linear infinite;
-    }
+h1 {
+  margin: 18px 0 10px;
+  font-size: 24px;
+}
 
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
-    }
-  </style>
+p {
+  font-size: 16px;
+  color: #444;
+  min-height: 48px;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.yes {
+  background: #7bcf9b;
+  color: white;
+}
+
+.maybe {
+  background: #e5e5e5;
+  margin-left: 10px;
+}
+</style>
 </head>
 <body>
 
-  <div class="card">
-    <img src="penguin.png" alt="Shy Penguin">
-
-    <h1>Hi…</h1>
-
-    <p>
-      I’m a little shy, but I wanted to ask  
-      something gently.
-    </p>
-
-    <p>
-      Someone misses being your friend.  
-      No pressure. Just honesty.
-    </p>
-
-    <button class="yes" onclick="yes()">Yes, we can be friends</button>
-    <button class="maybe" onclick="maybe()">I need some time</button>
+<div class="card" id="card">
+  <div class="penguin-wrap">
+    <img src="penguin.png" class="penguin" alt="penguin">
+    <div class="blush left"></div>
+    <div class="blush right"></div>
   </div>
 
+  <h1 id="title"></h1>
+  <p id="text"></p>
+
+  <div class="buttons">
+    <button class="yes" onclick="yes()">Yes, let’s be friends</button>
+    <button class="maybe" onclick="maybe()">I need some time</button>
+  </div>
+</div>
+
 <script>
-  function yes() {
-    document.querySelector('.card').innerHTML = `
-      <h1>Thank you.</h1>
-      <p>
-        This penguin feels a little braver now.  
-        And very grateful.
-      </p>
-    `;
-  }
+const titleText = "Hi…";
+const bodyText = "I’m a little shy, but someone really misses being your friend. No pressure. Just honesty.";
 
-  function maybe() {
-    document.querySelector('.card').innerHTML = `
-      <h1>That’s okay.</h1>
-      <p>
-        I’ll stay right here.  
-        Take all the time you need.
-      </p>
-    `;
-  }
+let ti = 0, bi = 0;
 
-  // Snow generator
-  for (let i = 0; i < 25; i++) {
-    const snow = document.createElement("div");
-    snow.className = "snow";
-    snow.textContent = "❄";
-    snow.style.left = Math.random() * 100 + "vw";
-    snow.style.animationDuration = (5 + Math.random() * 5) + "s";
-    snow.style.fontSize = (10 + Math.random() * 8) + "px";
-    document.body.appendChild(snow);
+function typeTitle() {
+  if (ti < titleText.length) {
+    document.getElementById("title").innerHTML += titleText.charAt(ti++);
+    setTimeout(typeTitle, 120);
+  } else {
+    setTimeout(typeBody, 400);
   }
+}
+
+function typeBody() {
+  if (bi < bodyText.length) {
+    document.getElementById("text").innerHTML += bodyText.charAt(bi++);
+    setTimeout(typeBody, 35);
+  }
+}
+
+typeTitle();
+
+function yes() {
+  document.getElementById("card").innerHTML = `
+    <h1>Thank you.</h1>
+    <p>This penguin feels a little braver now. And very grateful.</p>
+  `;
+}
+
+function maybe() {
+  document.getElementById("card").innerHTML = `
+    <h1>That’s okay.</h1>
+    <p>I’ll wait quietly. Take all the time you need.</p>
+  `;
+}
+
+/* sparkles */
+for (let i = 0; i < 30; i++) {
+  const s = document.createElement("div");
+  s.className = "sparkle";
+  s.style.left = Math.random() * 100 + "vw";
+  s.style.animationDuration = (6 + Math.random() * 6) + "s";
+  s.style.animationDelay = Math.random() * 5 + "s";
+  document.body.appendChild(s);
+}
 </script>
 
 </body>
