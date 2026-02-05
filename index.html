@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A Shy Penguin</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(#eef7ff, #ffffff);
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .card {
+      background: white;
+      padding: 28px;
+      border-radius: 18px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      animation: float 5s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    img {
+      width: 150px;
+      margin-bottom: 10px;
+      animation: peek 3.5s ease-in-out infinite;
+    }
+
+    @keyframes peek {
+      0%   { transform: translateY(10px) scale(0.95); opacity: 0.6; }
+      40%  { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(10px) scale(0.95); opacity: 0.6; }
+    }
+
+    h1, p {
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    h1 { animation-delay: 0.8s; }
+    p:nth-of-type(1) { animation-delay: 1.8s; }
+    p:nth-of-type(2) { animation-delay: 3.2s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 12px 18px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .yes {
+      background: #8bcf9b;
+      color: white;
+    }
+
+    .maybe {
+      background: #e0e0e0;
+      margin-left: 8px;
+    }
+
+    /* Snow */
+    .snow {
+      position: absolute;
+      top: -10px;
+      color: #cfe6ff;
+      font-size: 12px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <img src="penguin.png" alt="Shy Penguin">
+
+    <h1>Hi…</h1>
+
+    <p>
+      I’m a little shy, but I wanted to ask  
+      something gently.
+    </p>
+
+    <p>
+      Someone misses being your friend.  
+      No pressure. Just honesty.
+    </p>
+
+    <button class="yes" onclick="yes()">Yes, we can be friends</button>
+    <button class="maybe" onclick="maybe()">I need some time</button>
+  </div>
+
+<script>
+  function yes() {
+    document.querySelector('.card').innerHTML = `
+      <h1>Thank you.</h1>
+      <p>
+        This penguin feels a little braver now.  
+        And very grateful.
+      </p>
+    `;
+  }
+
+  function maybe() {
+    document.querySelector('.card').innerHTML = `
+      <h1>That’s okay.</h1>
+      <p>
+        I’ll stay right here.  
+        Take all the time you need.
+      </p>
+    `;
+  }
+
+  // Snow generator
+  for (let i = 0; i < 25; i++) {
+    const snow = document.createElement("div");
+    snow.className = "snow";
+    snow.textContent = "❄";
+    snow.style.left = Math.random() * 100 + "vw";
+    snow.style.animationDuration = (5 + Math.random() * 5) + "s";
+    snow.style.fontSize = (10 + Math.random() * 8) + "px";
+    document.body.appendChild(snow);
+  }
+</script>
+
+</body>
+</html>
