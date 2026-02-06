@@ -3,227 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Shy Penguin</title>
-
+<title>A Quiet Penguin</title>
 <style>
-:root {
-  --bg1: #eef6ff;
-  --bg2: #f7fbff;
-  --bg3: #f0f7f4;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #eef5fb;
+    height: 100%;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+  }
 
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: system-ui, sans-serif;
-  background: var(--bg1);
-  transition: background 1.5s ease;
-  overflow: hidden;
-}
+  #ui {
+    position: absolute;
+    bottom: 8%;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+  }
 
-/* scene container */
-#scene {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .text {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 14px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
 
-/* card */
-.card {
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  border-radius: 24px;
-  padding: 28px 26px 32px;
-  width: 92%;
-  max-width: 380px;
-  text-align: center;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.15);
-}
+  .buttons {
+    pointer-events: auto;
+  }
 
-/* penguin */
-.penguin {
-  position: relative;
-  width: 90px;
-  margin: 0 auto 18px;
-  animation: idle 4s ease-in-out infinite;
-}
+  button {
+    padding: 10px 18px;
+    margin: 6px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    background: #e3edf7;
+    cursor: pointer;
+    transition: transform .2s ease;
+  }
 
-@keyframes idle {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(4px); }
-}
+  button:hover {
+    transform: translateY(-2px);
+  }
 
-.body {
-  width: 90px;
-  height: 110px;
-  background: #222;
-  border-radius: 45px;
-  position: relative;
-}
-
-.belly {
-  width: 58px;
-  height: 70px;
-  background: #fff;
-  border-radius: 30px;
-  position: absolute;
-  bottom: 10px;
-  left: 16px;
-}
-
-.eye {
-  width: 6px;
-  height: 6px;
-  background: #fff;
-  border-radius: 50%;
-  position: absolute;
-  top: 30px;
-}
-
-.eye.left { left: 28px; }
-.eye.right { right: 28px; }
-
-.beak {
-  width: 10px;
-  height: 6px;
-  background: #f4b400;
-  border-radius: 4px;
-  position: absolute;
-  top: 40px;
-  left: 40px;
-}
-
-/* text */
-.text {
-  font-size: 16px;
-  color: #444;
-  min-height: 52px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
-/* buttons */
-.buttons button {
-  padding: 10px 18px;
-  margin: 6px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  background: #e6eef6;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.buttons button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-}
-
-.buttons .primary {
-  background: #7fcfa2;
-  color: #fff;
-}
+  .primary {
+    background: #7fcfa2;
+    color: white;
+  }
 </style>
 </head>
 
 <body>
-<div id="scene"></div>
+<canvas id="c"></canvas>
+
+<div id="ui">
+  <div class="text" id="text"></div>
+  <div class="buttons" id="buttons"></div>
+</div>
 
 <script>
-const scene = document.getElementById("scene");
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
 
-let step = 0;
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
 
-const scenes = [
-  {
-    bg: "--bg1",
-    text: "Hi…",
-    buttons: [{ label: "You can stay", next: 1 }]
-  },
-  {
-    bg: "--bg2",
-    text: "I wasn’t sure if I should come.",
-    buttons: [
-      { label: "It’s okay", next: 2 },
-      { label: "Take your time", next: 2 }
-    ]
-  },
-  {
-    bg: "--bg3",
-    text: "I made mistakes. I didn’t mean to hurt you.",
-    buttons: [
-      { label: "I know", next: 3 },
-      { label: "I hear you", next: 3 }
-    ]
-  },
-  {
-    bg: "--bg2",
-    text: "If it feels okay… would you like to be friends again?",
-    buttons: [
-      { label: "Yes", next: "yes", primary: true },
-      { label: "I need time", next: "wait" }
-    ]
+/* --- Penguin character --- */
+const penguin = {
+  x: -80,
+  y: canvas.height * 0.6,
+  targetX: canvas.width * 0.5,
+  facing: 1,
+  speed: 1.2,
+  state: "walk",
+  bob: 0
+};
+
+function drawPenguin(p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.scale(p.facing, 1);
+
+  // body
+  ctx.fillStyle = "#222";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 28, 40, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // belly
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.ellipse(0, 8, 18, 24, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // eyes
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(-8, -12, 3, 0, Math.PI * 2);
+  ctx.arc(8, -12, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // beak
+  ctx.fillStyle = "#f4b400";
+  ctx.beginPath();
+  ctx.moveTo(0, -6);
+  ctx.lineTo(6, -4);
+  ctx.lineTo(0, -2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/* --- Scene system --- */
+let scene = 0;
+const textEl = document.getElementById("text");
+const buttonsEl = document.getElementById("buttons");
+
+function showText(t, buttons = []) {
+  textEl.style.opacity = 0;
+  buttonsEl.innerHTML = "";
+  setTimeout(() => {
+    textEl.innerHTML = t;
+    textEl.style.opacity = 1;
+    buttons.forEach(b => {
+      const btn = document.createElement("button");
+      btn.textContent = b.label;
+      if (b.primary) btn.classList.add("primary");
+      btn.onclick = b.action;
+      buttonsEl.appendChild(btn);
+    });
+  }, 600);
+}
+
+function nextScene() {
+  scene++;
+
+  if (scene === 1) {
+    showText("Hi…", [
+      { label: "You can stay", action: () => walkTo(0.55) }
+    ]);
   }
-];
 
-function renderPenguin() {
-  return `
-    <div class="penguin">
-      <div class="body">
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-        <div class="beak"></div>
-        <div class="belly"></div>
-      </div>
-    </div>
-  `;
+  if (scene === 2) {
+    showText("I wasn’t sure if I should come.", [
+      { label: "It’s okay", action: () => walkTo(0.6) },
+      { label: "Take your time", action: () => walkTo(0.6) }
+    ]);
+  }
+
+  if (scene === 3) {
+    showText("I made mistakes. I didn’t mean to hurt you.", [
+      { label: "I know", action: () => walkTo(0.65) },
+      { label: "I hear you", action: () => walkTo(0.65) }
+    ]);
+  }
+
+  if (scene === 4) {
+    showText("If it feels okay… would you like to be friends again?", [
+      { label: "Yes", primary: true, action: () => ending(true) },
+      { label: "I need time", action: () => ending(false) }
+    ]);
+  }
 }
 
-function renderScene(i) {
-  document.body.style.background = getComputedStyle(document.documentElement)
-    .getPropertyValue(scenes[i].bg);
-
-  scene.innerHTML = `
-    <div class="card">
-      ${renderPenguin()}
-      <div class="text">${scenes[i].text}</div>
-      <div class="buttons">
-        ${scenes[i].buttons.map(b =>
-          `<button class="${b.primary ? "primary" : ""}"
-            onclick="go('${b.next}')">${b.label}</button>`
-        ).join("")}
-      </div>
-    </div>
-  `;
+function walkTo(fraction) {
+  penguin.targetX = canvas.width * fraction;
+  penguin.facing = penguin.targetX > penguin.x ? 1 : -1;
+  penguin.state = "walk";
 }
 
-function go(next) {
-  if (next === "yes") {
-    scene.innerHTML = `
-      <div class="card">
-        ${renderPenguin()}
-        <div class="text">
-          Thank you.<br>I’ll try to do better.
-        </div>
-      </div>
-    `;
-  } else if (next === "wait") {
-    scene.innerHTML = `
-      <div class="card">
-        ${renderPenguin()}
-        <div class="text">
-          That’s okay.<br>I’ll wait.
-        </div>
-      </div>
-    `;
+function ending(yes) {
+  buttonsEl.innerHTML = "";
+  showText(
+    yes
+      ? "Thank you. I’ll try to do better."
+      : "That’s okay. I’ll wait."
+  );
+}
+
+/* --- Animation loop --- */
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // background
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, "#f7fbff");
+  grad.addColorStop(1, "#e3eef7");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // penguin movement
+  if (penguin.state === "walk") {
+    penguin.x += penguin.speed * penguin.facing;
+    if (
+      (penguin.facing === 1 && penguin.x >= penguin.targetX) ||
+      (penguin.facing === -1 && penguin.x <= penguin.targetX)
+    ) {
+      penguin.state = "idle";
+      nextScene();
+    }
   } else {
-    renderScene(next);
+    penguin.bob += 0.05;
   }
+
+  drawPenguin(penguin);
+
+  requestAnimationFrame(animate);
 }
 
-renderScene(0);
+animate();
 </script>
 </body>
 </html>
-
