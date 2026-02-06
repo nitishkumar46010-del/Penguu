@@ -2,191 +2,228 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A Shy Penguin</title>
+
 <style>
-* {
-  box-sizing: border-box;
+:root {
+  --bg1: #eef6ff;
+  --bg2: #f7fbff;
+  --bg3: #f0f7f4;
 }
 
 body {
   margin: 0;
   height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, #eaf6ff, #ffffff);
+  font-family: system-ui, sans-serif;
+  background: var(--bg1);
+  transition: background 1.5s ease;
   overflow: hidden;
+}
+
+/* scene container */
+#scene {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* floating background sparkles */
-.sparkle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: rgba(200,230,255,0.8);
-  border-radius: 50%;
-  animation: drift linear infinite;
-}
-
-@keyframes drift {
-  from { transform: translateY(-10vh); opacity: 1; }
-  to { transform: translateY(110vh); opacity: 0; }
-}
-
+/* card */
 .card {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  padding: 32px;
-  border-radius: 22px;
-  width: 90%;
-  max-width: 420px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 28px 26px 32px;
+  width: 92%;
+  max-width: 380px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
-  animation: float 6s ease-in-out infinite;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.15);
 }
 
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
+/* penguin */
+.penguin {
+  position: relative;
+  width: 90px;
+  margin: 0 auto 18px;
+  animation: idle 4s ease-in-out infinite;
 }
 
-.penguin-wrap {
+@keyframes idle {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.body {
+  width: 90px;
+  height: 110px;
+  background: #222;
+  border-radius: 45px;
   position: relative;
 }
 
-.penguin {
-  width: 150px;
-  animation: shyBob 4s ease-in-out infinite;
-}
-
-@keyframes shyBob {
-  0% { transform: translateY(0) rotate(0deg); }
-  40% { transform: translateY(4px) rotate(-2deg); }
-  60% { transform: translateY(4px) rotate(2deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
-
-.blush {
+.belly {
+  width: 58px;
+  height: 70px;
+  background: #fff;
+  border-radius: 30px;
   position: absolute;
-  width: 14px;
-  height: 8px;
-  background: #ffb3c1;
+  bottom: 10px;
+  left: 16px;
+}
+
+.eye {
+  width: 6px;
+  height: 6px;
+  background: #fff;
   border-radius: 50%;
-  bottom: 28px;
-  opacity: 0.6;
+  position: absolute;
+  top: 30px;
 }
 
-.blush.left { left: 45px; }
-.blush.right { right: 45px; }
+.eye.left { left: 28px; }
+.eye.right { right: 28px; }
 
-h1 {
-  margin: 18px 0 10px;
-  font-size: 24px;
+.beak {
+  width: 10px;
+  height: 6px;
+  background: #f4b400;
+  border-radius: 4px;
+  position: absolute;
+  top: 40px;
+  left: 40px;
 }
 
-p {
+/* text */
+.text {
   font-size: 16px;
   color: #444;
-  min-height: 48px;
+  min-height: 52px;
+  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
-.buttons {
-  margin-top: 20px;
-}
-
-button {
-  padding: 12px 20px;
-  font-size: 15px;
-  border-radius: 10px;
+/* buttons */
+.buttons button {
+  padding: 10px 18px;
+  margin: 6px;
   border: none;
+  border-radius: 10px;
+  font-size: 14px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: #e6eef6;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-button:hover {
+.buttons button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
 
-.yes {
-  background: #7bcf9b;
-  color: white;
-}
-
-.maybe {
-  background: #e5e5e5;
-  margin-left: 10px;
+.buttons .primary {
+  background: #7fcfa2;
+  color: #fff;
 }
 </style>
 </head>
+
 <body>
-
-<div class="card" id="card">
-  <div class="penguin-wrap">
-    <img src="penguin.png" class="penguin" alt="penguin">
-    <div class="blush left"></div>
-    <div class="blush right"></div>
-  </div>
-
-  <h1 id="title"></h1>
-  <p id="text"></p>
-
-  <div class="buttons">
-    <button class="yes" onclick="yes()">Yes, let’s be friends</button>
-    <button class="maybe" onclick="maybe()">I need some time</button>
-  </div>
-</div>
+<div id="scene"></div>
 
 <script>
-const titleText = "Hi…";
-const bodyText = "I’m a little shy, but someone really misses being your friend. No pressure. Just honesty.";
+const scene = document.getElementById("scene");
 
-let ti = 0, bi = 0;
+let step = 0;
 
-function typeTitle() {
-  if (ti < titleText.length) {
-    document.getElementById("title").innerHTML += titleText.charAt(ti++);
-    setTimeout(typeTitle, 120);
+const scenes = [
+  {
+    bg: "--bg1",
+    text: "Hi…",
+    buttons: [{ label: "You can stay", next: 1 }]
+  },
+  {
+    bg: "--bg2",
+    text: "I wasn’t sure if I should come.",
+    buttons: [
+      { label: "It’s okay", next: 2 },
+      { label: "Take your time", next: 2 }
+    ]
+  },
+  {
+    bg: "--bg3",
+    text: "I made mistakes. I didn’t mean to hurt you.",
+    buttons: [
+      { label: "I know", next: 3 },
+      { label: "I hear you", next: 3 }
+    ]
+  },
+  {
+    bg: "--bg2",
+    text: "If it feels okay… would you like to be friends again?",
+    buttons: [
+      { label: "Yes", next: "yes", primary: true },
+      { label: "I need time", next: "wait" }
+    ]
+  }
+];
+
+function renderPenguin() {
+  return `
+    <div class="penguin">
+      <div class="body">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="beak"></div>
+        <div class="belly"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderScene(i) {
+  document.body.style.background = getComputedStyle(document.documentElement)
+    .getPropertyValue(scenes[i].bg);
+
+  scene.innerHTML = `
+    <div class="card">
+      ${renderPenguin()}
+      <div class="text">${scenes[i].text}</div>
+      <div class="buttons">
+        ${scenes[i].buttons.map(b =>
+          `<button class="${b.primary ? "primary" : ""}"
+            onclick="go('${b.next}')">${b.label}</button>`
+        ).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function go(next) {
+  if (next === "yes") {
+    scene.innerHTML = `
+      <div class="card">
+        ${renderPenguin()}
+        <div class="text">
+          Thank you.<br>I’ll try to do better.
+        </div>
+      </div>
+    `;
+  } else if (next === "wait") {
+    scene.innerHTML = `
+      <div class="card">
+        ${renderPenguin()}
+        <div class="text">
+          That’s okay.<br>I’ll wait.
+        </div>
+      </div>
+    `;
   } else {
-    setTimeout(typeBody, 400);
+    renderScene(next);
   }
 }
 
-function typeBody() {
-  if (bi < bodyText.length) {
-    document.getElementById("text").innerHTML += bodyText.charAt(bi++);
-    setTimeout(typeBody, 35);
-  }
-}
-
-typeTitle();
-
-function yes() {
-  document.getElementById("card").innerHTML = `
-    <h1>Thank you.</h1>
-    <p>This penguin feels a little braver now. And very grateful.</p>
-  `;
-}
-
-function maybe() {
-  document.getElementById("card").innerHTML = `
-    <h1>That’s okay.</h1>
-    <p>I’ll wait quietly. Take all the time you need.</p>
-  `;
-}
-
-/* sparkles */
-for (let i = 0; i < 30; i++) {
-  const s = document.createElement("div");
-  s.className = "sparkle";
-  s.style.left = Math.random() * 100 + "vw";
-  s.style.animationDuration = (6 + Math.random() * 6) + "s";
-  s.style.animationDelay = Math.random() * 5 + "s";
-  document.body.appendChild(s);
-}
+renderScene(0);
 </script>
-
 </body>
-</html>    
+</html>
+
