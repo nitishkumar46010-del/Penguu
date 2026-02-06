@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Penguin Movement Test</title>
+<title>Alive Penguin</title>
 <style>
 html, body {
   margin: 0;
@@ -28,19 +28,35 @@ window.addEventListener("resize", resize);
 resize();
 
 let penguin = {
-  x: -60,
-  y: c.height * 0.6,
-  speed: 2
+  x: 100,
+  y: c.height * 0.65,
+  vx: 1.6,
+  dir: 1,
+  phase: 0,
+  state: "walk"
 };
 
 function drawPenguin(p) {
   ctx.save();
   ctx.translate(p.x, p.y);
+  ctx.scale(p.dir, 1);
+
+  // walking bob
+  const bob = p.state === "walk" ? Math.sin(p.phase) * 4 : Math.sin(p.phase) * 1.5;
+
+  ctx.translate(0, bob);
+
+  // feet (simple illusion)
+  ctx.fillStyle = "#f4b400";
+  ctx.beginPath();
+  ctx.ellipse(-10, 38 + Math.sin(p.phase) * 3, 10, 4, 0, 0, Math.PI * 2);
+  ctx.ellipse(10, 38 - Math.sin(p.phase) * 3, 10, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
 
   // body
   ctx.fillStyle = "#222";
   ctx.beginPath();
-  ctx.ellipse(0, 0, 30, 40, 0, 0, Math.PI * 2);
+  ctx.ellipse(0, 0, 28, 40, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // belly
@@ -78,10 +94,22 @@ function animate() {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);
 
-  // move penguin
-  penguin.x += penguin.speed;
-  if (penguin.x > c.width + 60) {
-    penguin.x = -60;
+  // movement logic
+  if (penguin.state === "walk") {
+    penguin.x += penguin.vx * penguin.dir;
+    penguin.phase += 0.15;
+
+    if (penguin.x > c.width - 100) {
+      penguin.dir = -1;
+      penguin.state = "idle";
+    }
+    if (penguin.x < 100) {
+      penguin.dir = 1;
+      penguin.state = "idle";
+    }
+  } else {
+    penguin.phase += 0.05;
+    if (Math.random() < 0.01) penguin.state = "walk";
   }
 
   drawPenguin(penguin);
