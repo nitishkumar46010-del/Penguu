@@ -1,221 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Quiet Penguin</title>
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #eef6ff;
-  font-family: system-ui, sans-serif;
-}
-
-#ui {
-  position: absolute;
-  bottom: 7%;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
-}
-
-#text {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 14px;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-
-#buttons {
-  pointer-events: auto;
-}
-
-button {
-  padding: 10px 18px;
-  margin: 6px;
-  border-radius: 10px;
-  border: none;
-  font-size: 14px;
-  background: #e3edf7;
-  cursor: pointer;
-  transition: transform .2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-}
-
-.primary {
-  background: #7fcfa2;
-  color: white;
-}
-</style>
+<title>Canvas Test</title>
 </head>
-
 <body>
-<canvas id="game"></canvas>
-
-<div id="ui">
-  <div id="text"></div>
-  <div id="buttons"></div>
-</div>
+<canvas id="c"></canvas>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
 
 function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
 }
-window.addEventListener("resize", resize);
 resize();
 
-/* --- LOAD WALK FRAMES --- */
-const frameCount = 12; // change if you have more frames
-const frames = [];
+ctx.fillStyle = "#88c";
+ctx.fillRect(50, 50, 200, 200);
 
-for (let i = 1; i <= frameCount; i++) {
-  const img = new Image();
-  img.src = `penguin${i}.png`;
-  frames.push(img);
-}
-
-/* --- Penguin state --- */
-const penguin = {
-  x: -80,
-  y: canvas.height * 0.65,
-  targetX: canvas.width * 0.5,
-  speed: 1.6,
-  frame: 0,
-  frameTimer: 0,
-  frameDelay: 8,
-  facing: 1,
-  state: "walk"
-};
-
-/* --- UI --- */
-let scene = 0;
-const textEl = document.getElementById("text");
-const buttonsEl = document.getElementById("buttons");
-
-function showText(t, buttons = []) {
-  textEl.style.opacity = 0;
-  buttonsEl.innerHTML = "";
-  setTimeout(() => {
-    textEl.innerHTML = t;
-    textEl.style.opacity = 1;
-    buttons.forEach(b => {
-      const btn = document.createElement("button");
-      btn.textContent = b.label;
-      if (b.primary) btn.classList.add("primary");
-      btn.onclick = b.action;
-      buttonsEl.appendChild(btn);
-    });
-  }, 500);
-}
-
-function nextScene() {
-  scene++;
-
-  if (scene === 1) {
-    showText("Hi…", [
-      { label: "You can stay", action: () => walkTo(0.55) }
-    ]);
-  }
-
-  if (scene === 2) {
-    showText("I wasn’t sure if I should come.", [
-      { label: "It’s okay", action: () => walkTo(0.6) },
-      { label: "Take your time", action: () => walkTo(0.6) }
-    ]);
-  }
-
-  if (scene === 3) {
-    showText("I made mistakes. I didn’t mean to hurt you.", [
-      { label: "I know", action: () => walkTo(0.65) },
-      { label: "I hear you", action: () => walkTo(0.65) }
-    ]);
-  }
-
-  if (scene === 4) {
-    showText("If it feels okay… would you like to be friends again?", [
-      { label: "Yes", primary: true, action: () => ending(true) },
-      { label: "I need time", action: () => ending(false) }
-    ]);
-  }
-}
-
-function walkTo(fraction) {
-  penguin.targetX = canvas.width * fraction;
-  penguin.facing = penguin.targetX > penguin.x ? 1 : -1;
-  penguin.state = "walk";
-}
-
-function ending(yes) {
-  buttonsEl.innerHTML = "";
-  showText(
-    yes
-      ? "Thank you. I’ll try to do better."
-      : "That’s okay. I’ll wait."
-  );
-}
-
-/* --- ANIMATION LOOP --- */
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // background
-  const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  bg.addColorStop(0, "#f7fbff");
-  bg.addColorStop(1, "#e3eef7");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // movement
-  if (penguin.state === "walk") {
-    penguin.x += penguin.speed * penguin.facing;
-
-    if (
-      (penguin.facing === 1 && penguin.x >= penguin.targetX) ||
-      (penguin.facing === -1 && penguin.x <= penguin.targetX)
-    ) {
-      penguin.state = "idle";
-      nextScene();
-    }
-  }
-
-  // frame animation
-  penguin.frameTimer++;
-  if (penguin.frameTimer > penguin.frameDelay) {
-    penguin.frame = (penguin.frame + 1) % frameCount;
-    penguin.frameTimer = 0;
-  }
-
-  // draw penguin
-  ctx.save();
-  ctx.translate(penguin.x, penguin.y);
-  ctx.scale(penguin.facing, 1);
-
-  const img = frames[penguin.frame];
-  if (img.complete) {
-    ctx.drawImage(
-      img,
-      -img.width / 2,
-      -img.height
-    );
-  }
-
-  ctx.restore();
-
-  requestAnimationFrame(animate);
-}
-
-animate();
+ctx.fillStyle = "#fff";
+ctx.font = "20px sans-serif";
+ctx.fillText("If you see this, canvas works.", 60, 90);
 </script>
 </body>
 </html>
