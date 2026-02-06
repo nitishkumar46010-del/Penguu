@@ -5,67 +5,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A Quiet Penguin</title>
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: #eef5fb;
-    height: 100%;
-    overflow: hidden;
-    font-family: system-ui, sans-serif;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #eef6ff;
+  font-family: system-ui, sans-serif;
+}
 
-  #ui {
-    position: absolute;
-    bottom: 8%;
-    width: 100%;
-    text-align: center;
-    pointer-events: none;
-  }
+#ui {
+  position: absolute;
+  bottom: 7%;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
 
-  .text {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 14px;
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
+#text {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 14px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
 
-  .buttons {
-    pointer-events: auto;
-  }
+#buttons {
+  pointer-events: auto;
+}
 
-  button {
-    padding: 10px 18px;
-    margin: 6px;
-    border-radius: 10px;
-    border: none;
-    font-size: 14px;
-    background: #e3edf7;
-    cursor: pointer;
-    transition: transform .2s ease;
-  }
+button {
+  padding: 10px 18px;
+  margin: 6px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  background: #e3edf7;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
 
-  button:hover {
-    transform: translateY(-2px);
-  }
+button:hover {
+  transform: translateY(-2px);
+}
 
-  .primary {
-    background: #7fcfa2;
-    color: white;
-  }
+.primary {
+  background: #7fcfa2;
+  color: white;
+}
 </style>
 </head>
 
 <body>
-<canvas id="c"></canvas>
+<canvas id="game"></canvas>
 
 <div id="ui">
-  <div class="text" id="text"></div>
-  <div class="buttons" id="buttons"></div>
+  <div id="text"></div>
+  <div id="buttons"></div>
 </div>
 
 <script>
-const canvas = document.getElementById("c");
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resize() {
@@ -75,54 +75,30 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-/* --- Penguin character --- */
-const penguin = {
-  x: -80,
-  y: canvas.height * 0.6,
-  targetX: canvas.width * 0.5,
-  facing: 1,
-  speed: 1.2,
-  state: "walk",
-  bob: 0
-};
+/* --- LOAD WALK FRAMES --- */
+const frameCount = 12; // change if you have more frames
+const frames = [];
 
-function drawPenguin(p) {
-  ctx.save();
-  ctx.translate(p.x, p.y);
-  ctx.scale(p.facing, 1);
-
-  // body
-  ctx.fillStyle = "#222";
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 28, 40, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // belly
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.ellipse(0, 8, 18, 24, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // eyes
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(-8, -12, 3, 0, Math.PI * 2);
-  ctx.arc(8, -12, 3, 0, Math.PI * 2);
-  ctx.fill();
-
-  // beak
-  ctx.fillStyle = "#f4b400";
-  ctx.beginPath();
-  ctx.moveTo(0, -6);
-  ctx.lineTo(6, -4);
-  ctx.lineTo(0, -2);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.restore();
+for (let i = 1; i <= frameCount; i++) {
+  const img = new Image();
+  img.src = `penguin${i}.png`;
+  frames.push(img);
 }
 
-/* --- Scene system --- */
+/* --- Penguin state --- */
+const penguin = {
+  x: -80,
+  y: canvas.height * 0.65,
+  targetX: canvas.width * 0.5,
+  speed: 1.6,
+  frame: 0,
+  frameTimer: 0,
+  frameDelay: 8,
+  facing: 1,
+  state: "walk"
+};
+
+/* --- UI --- */
 let scene = 0;
 const textEl = document.getElementById("text");
 const buttonsEl = document.getElementById("buttons");
@@ -140,7 +116,7 @@ function showText(t, buttons = []) {
       btn.onclick = b.action;
       buttonsEl.appendChild(btn);
     });
-  }, 600);
+  }, 500);
 }
 
 function nextScene() {
@@ -189,20 +165,21 @@ function ending(yes) {
   );
 }
 
-/* --- Animation loop --- */
+/* --- ANIMATION LOOP --- */
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // background
-  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  grad.addColorStop(0, "#f7fbff");
-  grad.addColorStop(1, "#e3eef7");
-  ctx.fillStyle = grad;
+  const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  bg.addColorStop(0, "#f7fbff");
+  bg.addColorStop(1, "#e3eef7");
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // penguin movement
+  // movement
   if (penguin.state === "walk") {
     penguin.x += penguin.speed * penguin.facing;
+
     if (
       (penguin.facing === 1 && penguin.x >= penguin.targetX) ||
       (penguin.facing === -1 && penguin.x <= penguin.targetX)
@@ -210,11 +187,30 @@ function animate() {
       penguin.state = "idle";
       nextScene();
     }
-  } else {
-    penguin.bob += 0.05;
   }
 
-  drawPenguin(penguin);
+  // frame animation
+  penguin.frameTimer++;
+  if (penguin.frameTimer > penguin.frameDelay) {
+    penguin.frame = (penguin.frame + 1) % frameCount;
+    penguin.frameTimer = 0;
+  }
+
+  // draw penguin
+  ctx.save();
+  ctx.translate(penguin.x, penguin.y);
+  ctx.scale(penguin.facing, 1);
+
+  const img = frames[penguin.frame];
+  if (img.complete) {
+    ctx.drawImage(
+      img,
+      -img.width / 2,
+      -img.height
+    );
+  }
+
+  ctx.restore();
 
   requestAnimationFrame(animate);
 }
