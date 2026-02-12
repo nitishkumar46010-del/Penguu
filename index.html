@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Chat</title>
 
 <style>
@@ -13,62 +13,58 @@
 
   body {
     margin: 0;
-    background: #f7cfd6; /* baby pink */
-    height: 100vh;
-    display: flex;
-    justify-content: center;
+    background: #f7cfd6;
   }
 
   .screen {
+    height: 100svh;              /* TRUE mobile height */
     width: 100%;
     max-width: 430px;
-    padding: 24px 14px;
+    margin: 0 auto;
+    padding: 24px 12px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* CENTER vertically */
+    justify-content: center;     /* HARD center */
   }
 
-  /* LEFT (YOU) */
   .left {
     align-self: flex-start;
-    max-width: 75%;
-    margin-right: auto;
+    max-width: 78%;
   }
 
   .sticker {
-    width: 240px; /* BIGGER for phone */
-    margin-bottom: 12px;
+    width: 300px;               /* BIG, intentional */
+    max-width: 90vw;
+    margin-bottom: 14px;
   }
 
   .bubble {
     background: #fff;
-    border-radius: 20px;
-    padding: 16px 18px;
-    font-size: 17px;
+    border-radius: 22px;
+    padding: 18px 20px;
+    font-size: 18px;
+    line-height: 1.35;
     color: #444;
     border: 1px solid #e6bfc6;
   }
 
-  /* GAP BETWEEN YOU AND HER */
   .spacer {
-    height: 32px;
+    height: 48px;               /* CLEAR pause */
   }
 
-  /* RIGHT (HER OPTIONS) */
   .right {
     align-self: flex-end;
-    max-width: 75%;
-    margin-left: auto;
+    max-width: 78%;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
 
   .option {
     background: #fff;
-    border-radius: 20px;
-    padding: 16px 18px;
-    font-size: 16px;
+    border-radius: 22px;
+    padding: 18px 22px;
+    font-size: 17px;
     color: #444;
     border: 1px solid #e6bfc6;
     text-align: center;
@@ -126,7 +122,7 @@ function render(sticker, text, options = []) {
   }
 }
 
-/* FLOW */
+/* FLOW — UNCHANGED */
 
 render(1,
   "Umm, hii you are here, hello i wanted to say something, can i?",
@@ -137,18 +133,8 @@ render(1,
         render(2,
           "Be my lovely friend?",
           [
-            {
-              text: "yes",
-              action: () => {
-                render(4, "Okay, see you");
-              }
-            },
-            {
-              text: "No",
-              action: () => {
-                render(5, "Okay, no worries");
-              }
-            }
+            { text: "yes", action: () => render(4, "Okay, see you") },
+            { text: "No", action: () => render(5, "Okay, no worries") }
           ]
         );
       }
