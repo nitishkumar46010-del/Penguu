@@ -24,17 +24,18 @@
     width: 100%;
     max-width: 420px;
     height: 100%;
-    padding: 24px;
+    padding: 24px 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 28px;
+    gap: 32px;
   }
 
   /* LEFT SIDE (YOU) */
   .left {
     align-self: flex-start;
-    max-width: 75%;
+    max-width: 70%;
+    margin-right: auto; /* push away from center */
   }
 
   .sticker {
@@ -51,12 +52,14 @@
     border: 1px solid #e6bfc6;
   }
 
-  /* RIGHT SIDE (CHOICES) */
+  /* RIGHT SIDE (HER) */
   .right {
     align-self: flex-end;
+    max-width: 70%;
+    margin-left: auto; /* push away from center */
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .choice {
@@ -68,7 +71,6 @@
     border: 1px solid #e6bfc6;
     cursor: pointer;
     text-align: center;
-    min-width: 140px;
   }
 
   .choice:hover {
@@ -81,21 +83,21 @@
 
 <div class="chat-screen">
 
-  <!-- LEFT MESSAGE -->
+  <!-- LEFT MESSAGE (YOU) -->
   <div class="left">
-    <!-- TEMP RANDOM STICKER -->
+    <!-- YOUR STICKER (UPLOAD LATER) -->
     <img 
-      src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" 
+      src="sticker.webp" 
       class="sticker" 
-      alt="sticker"
+      alt="your sticker"
     />
 
     <div class="bubble-left">
-      Just a random question to see how this feels 🙂
+      This is just a sample message to see spacing and layout.
     </div>
   </div>
 
-  <!-- RIGHT CHOICES -->
+  <!-- RIGHT CHOICES (HER) -->
   <div class="right">
     <div class="choice">Option A</div>
     <div class="choice">Option B</div>
