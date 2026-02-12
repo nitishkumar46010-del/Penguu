@@ -22,49 +22,53 @@
   .screen {
     width: 100%;
     max-width: 430px;
-    padding: 20px 12px;
+    padding: 24px 14px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: 26px;
+    justify-content: center; /* CENTER vertically */
   }
 
   /* LEFT (YOU) */
   .left {
     align-self: flex-start;
-    max-width: 72%;
+    max-width: 75%;
     margin-right: auto;
   }
 
   .sticker {
-    width: 180px; /* mobile-first, bigger */
-    margin-bottom: 8px;
+    width: 240px; /* BIGGER for phone */
+    margin-bottom: 12px;
   }
 
   .bubble {
     background: #fff;
-    border-radius: 18px;
-    padding: 14px 16px;
-    font-size: 16px;
+    border-radius: 20px;
+    padding: 16px 18px;
+    font-size: 17px;
     color: #444;
     border: 1px solid #e6bfc6;
+  }
+
+  /* GAP BETWEEN YOU AND HER */
+  .spacer {
+    height: 32px;
   }
 
   /* RIGHT (HER OPTIONS) */
   .right {
     align-self: flex-end;
-    max-width: 72%;
+    max-width: 75%;
     margin-left: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .option {
     background: #fff;
-    border-radius: 18px;
-    padding: 14px 16px;
-    font-size: 15px;
+    border-radius: 20px;
+    padding: 16px 18px;
+    font-size: 16px;
     color: #444;
     border: 1px solid #e6bfc6;
     text-align: center;
@@ -103,6 +107,10 @@ function render(sticker, text, options = []) {
   screen.appendChild(left);
 
   if (options.length) {
+    const spacer = document.createElement("div");
+    spacer.className = "spacer";
+    screen.appendChild(spacer);
+
     const right = document.createElement("div");
     right.className = "right";
 
