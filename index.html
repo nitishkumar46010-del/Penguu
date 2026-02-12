@@ -1,111 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Penguin Walk</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chat Mockup</title>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #eef5fb;
-}
+  * {
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #f7cfd6; /* baby pink */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .chat-screen {
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  /* LEFT SIDE (YOU) */
+  .left {
+    align-self: flex-start;
+    max-width: 75%;
+  }
+
+  .sticker {
+    width: 120px;
+    margin-bottom: 10px;
+  }
+
+  .bubble-left {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 14px 16px;
+    color: #444;
+    font-size: 15px;
+    border: 1px solid #e6bfc6;
+  }
+
+  /* RIGHT SIDE (CHOICES) */
+  .right {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .choice {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #444;
+    border: 1px solid #e6bfc6;
+    cursor: pointer;
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .choice:hover {
+    background: #fbe9ec;
+  }
 </style>
 </head>
 
 <body>
-<canvas id="c"></canvas>
 
-<script>
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
+<div class="chat-screen">
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
+  <!-- LEFT MESSAGE -->
+  <div class="left">
+    <!-- TEMP RANDOM STICKER -->
+    <img 
+      src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" 
+      class="sticker" 
+      alt="sticker"
+    />
 
-/* --- Load sprite frames --- */
-const frameCount = 12;
-const frames = [];
-let loaded = 0;
+    <div class="bubble-left">
+      Just a random question to see how this feels 🙂
+    </div>
+  </div>
 
-for (let i = 1; i <= frameCount; i++) {
-  const img = new Image();
-  const num = String(i).padStart(2, "0");
-  img.src = `penguin${num}.png`;
-  img.onload = () => loaded++;
-  frames.push(img);
-}
+  <!-- RIGHT CHOICES -->
+  <div class="right">
+    <div class="choice">Option A</div>
+    <div class="choice">Option B</div>
+  </div>
 
-/* --- Penguin state --- */
-const penguin = {
-  x: -150,
-  y: canvas.height * 0.65,
-  speed: 1.8,
-  dir: 1,
-  frame: 0,
-  frameTimer: 0
-};
+</div>
 
-function drawPenguin() {
-  const img = frames[Math.floor(penguin.frame)];
-  if (!img) return;
-
-  ctx.save();
-  ctx.translate(penguin.x, penguin.y);
-  ctx.scale(penguin.dir, 1);
-
-  const scale = 0.5;
-  const w = img.width * scale;
-  const h = img.height * scale;
-
-  ctx.drawImage(img, -w / 2, -h / 2, w, h);
-  ctx.restore();
-}
-
-function update() {
-  // background
-  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  g.addColorStop(0, "#f7fbff");
-  g.addColorStop(1, "#e3eef7");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  if (loaded < frameCount) {
-    ctx.fillStyle = "#555";
-    ctx.font = "18px sans-serif";
-    ctx.fillText("Loading penguin…", 20, 30);
-    requestAnimationFrame(update);
-    return;
-  }
-
-  // movement
-  penguin.x += penguin.speed * penguin.dir;
-
-  if (penguin.x > canvas.width + 150) {
-    penguin.dir = -1;
-  }
-  if (penguin.x < -150) {
-    penguin.dir = 1;
-  }
-
-  // animation frames
-  penguin.frameTimer++;
-  if (penguin.frameTimer > 6) {
-    penguin.frame = (penguin.frame + 1) % frameCount;
-    penguin.frameTimer = 0;
-  }
-
-  drawPenguin();
-  requestAnimationFrame(update);
-}
-
-update();
-</script>
 </body>
 </html>
