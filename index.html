@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chat Mockup</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
 
 <style>
   * {
@@ -13,67 +13,65 @@
 
   body {
     margin: 0;
-    height: 100vh;
     background: #f7cfd6; /* baby pink */
+    height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
   }
 
-  .chat-screen {
+  .screen {
     width: 100%;
-    max-width: 420px;
-    height: 100%;
-    padding: 24px 16px;
+    max-width: 430px;
+    padding: 20px 12px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 32px;
+    justify-content: flex-start;
+    gap: 26px;
   }
 
-  /* LEFT SIDE (YOU) */
+  /* LEFT (YOU) */
   .left {
     align-self: flex-start;
-    max-width: 70%;
-    margin-right: auto; /* push away from center */
+    max-width: 72%;
+    margin-right: auto;
   }
 
   .sticker {
-    width: 120px;
-    margin-bottom: 10px;
+    width: 180px; /* mobile-first, bigger */
+    margin-bottom: 8px;
   }
 
-  .bubble-left {
-    background: #ffffff;
+  .bubble {
+    background: #fff;
     border-radius: 18px;
     padding: 14px 16px;
+    font-size: 16px;
     color: #444;
-    font-size: 15px;
     border: 1px solid #e6bfc6;
   }
 
-  /* RIGHT SIDE (HER) */
+  /* RIGHT (HER OPTIONS) */
   .right {
     align-self: flex-end;
-    max-width: 70%;
-    margin-left: auto; /* push away from center */
+    max-width: 72%;
+    margin-left: auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
-  .choice {
-    background: #ffffff;
+  .option {
+    background: #fff;
     border-radius: 18px;
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: 14px 16px;
+    font-size: 15px;
     color: #444;
     border: 1px solid #e6bfc6;
-    cursor: pointer;
     text-align: center;
+    cursor: pointer;
   }
 
-  .choice:hover {
+  .option:active {
     background: #fbe9ec;
   }
 </style>
@@ -81,29 +79,81 @@
 
 <body>
 
-<div class="chat-screen">
+<div class="screen" id="screen"></div>
 
-  <!-- LEFT MESSAGE (YOU) -->
-  <div class="left">
-    <!-- YOUR STICKER (UPLOAD LATER) -->
-    <img 
-      src="sticker.webp" 
-      class="sticker" 
-      alt="your sticker"
-    />
+<script>
+const screen = document.getElementById("screen");
 
-    <div class="bubble-left">
-      This is just a sample message to see spacing and layout.
-    </div>
-  </div>
+function render(sticker, text, options = []) {
+  screen.innerHTML = "";
 
-  <!-- RIGHT CHOICES (HER) -->
-  <div class="right">
-    <div class="choice">Option A</div>
-    <div class="choice">Option B</div>
-  </div>
+  const left = document.createElement("div");
+  left.className = "left";
 
-</div>
+  const img = document.createElement("img");
+  img.src = `${sticker}.webp`;
+  img.className = "sticker";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerText = text;
+
+  left.appendChild(img);
+  left.appendChild(bubble);
+  screen.appendChild(left);
+
+  if (options.length) {
+    const right = document.createElement("div");
+    right.className = "right";
+
+    options.forEach(opt => {
+      const btn = document.createElement("div");
+      btn.className = "option";
+      btn.innerText = opt.text;
+      btn.onclick = opt.action;
+      right.appendChild(btn);
+    });
+
+    screen.appendChild(right);
+  }
+}
+
+/* FLOW */
+
+render(1,
+  "Umm, hii you are here, hello i wanted to say something, can i?",
+  [
+    {
+      text: "okay, go ahead",
+      action: () => {
+        render(2,
+          "Be my lovely friend?",
+          [
+            {
+              text: "yes",
+              action: () => {
+                render(4, "Okay, see you");
+              }
+            },
+            {
+              text: "No",
+              action: () => {
+                render(5, "Okay, no worries");
+              }
+            }
+          ]
+        );
+      }
+    },
+    {
+      text: "nope, you always say stupid stuff",
+      action: () => {
+        render(3, "Haha, okay you can come back to know what it was");
+      }
+    }
+  ]
+);
+</script>
 
 </body>
 </html>
